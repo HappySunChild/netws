@@ -4,7 +4,8 @@ const registry = require("./registry")
 const get_packet, get_query = registry.get_packet, registry.get_query
 
 const references = require("./references")
-const set_references = references.set
+const raw_references, set_references, clear_references =
+	references.raw, references.set_references, references.clear_references
 
 export type ContextInformation = {
 	remote_event: RemoteEvent,
@@ -12,18 +13,18 @@ export type ContextInformation = {
 	remote_function: RemoteFunction,
 }
 
-const function on_packet(raw_data: buffer, refs: { any }, client: Player?)
-	const packet_id = buffer.readu8(raw_data, 0)
+const function on_packet(incoming_data: buffer, incoming_refs: { any }, origin_client: Player?)
+	const packet_id = buffer.readu8(incoming_data, 0)
 	const packet = get_packet(packet_id)
 
 	assert(packet, "unknown packet")
 
-	set_references(refs)
+	set_references(incoming_refs)
 
-	const args = { select(2, packet.read(raw_data, 1)) }
+	const args = { select(2, packet.read(incoming_data, 1)) }
 
-	if client ~= nil then
-		table.insert(args, 1, client)
+	if origin_client ~= nil then
+		table.insert(args, 1, origin_client)
 	end
 
 	for _, callback in packet.listeners do
@@ -31,24 +32,24 @@ const function on_packet(raw_data: buffer, refs: { any }, client: Player?)
 	end
 end
 
-const function on_query(raw_data: buffer, refs: { any }, client: Player?): buffer
-	const query_id = buffer.readu8(raw_data, 0)
+const function on_query(incoming_data: buffer, incoming_refs: { any }, origin_client: Player?): buffer
+	const query_id = buffer.readu8(incoming_data, 0)
 	const query = get_query(query_id)
 
 	assert(query, "unknown query")
 
-	set_references(refs)
+	set_references(incoming_refs)
 
-	const results = {
-		if client ~= nil
-			then query.callback(client, select(2, query.args_read(raw_data, 1)))
-			else query.callback(select(2, query.args_read(raw_data, 1))),
-	}
+	const results = if origin_client ~= nil
+		then { query.callback(origin_client, select(2, query.args_read(incoming_data, 1))) }
+		else { query.callback(select(2, query.args_read(incoming_data, 1))) }
 
-	const b = buffer.create(query.result_alloc(unpack(results)))
-	query.result_write(b, 0, unpack(results))
+	clear_references()
 
-	return b
+	const outgoing_data = buffer.create(query.result_size(unpack(results)))
+	query.result_write(outgoing_data, 0, unpack(results))
+
+	return outgoing_data
 end
 
 const function initialize_server(): ContextInformation
@@ -64,12 +65,12 @@ const function initialize_server(): ContextInformation
 	remote_function.Name = "$func"
 	remote_function.Parent = script
 
-	const function on_server_event(client: Player, raw_data: buffer, references: { any }): ()
-		on_packet(raw_data, references, client)
+	const function on_server_event(client: Player, incoming_data: buffer, incoming_refs: { any }): ()
+		on_packet(incoming_data, incoming_refs, client)
 	end
 
-	const function on_server_invoke(client: Player, raw_data: buffer, references: { any })
-		return on_query(raw_data, references, client)
+	const function on_server_invoke(client: Player, incoming_data: buffer, incoming_refs: { any }): (buffer, { any })
+		return on_query(incoming_data, incoming_refs, client), raw_references
 	end
 
 	remote_event.OnServerEvent:Connect(on_server_event)
@@ -92,8 +93,8 @@ const function initialize_client(): ContextInformation
 		on_packet(raw_data, references, nil)
 	end
 
-	const function on_client_invoke(raw_data: buffer, references: { any })
-		return on_query(raw_data, references, nil)
+	const function on_client_invoke(raw_data: buffer, references: { any }): (buffer, { any })
+		return on_query(raw_data, references, nil), raw_references
 	end
 
 	remote_event.OnClientEvent:Connect(on_client_event)
