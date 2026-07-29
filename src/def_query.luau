@@ -9,30 +9,40 @@ const register_query = registry.register_query
 const interface = require("./interface")
 const invoke_server, invoke_client = interface.invoke_server, interface.invoke_client
 
-const function default_query_callback()
+const references = require("./references")
+const set_references = references.set
+
+const function default_query_callback(): never
 	error("query handler hasn't been set")
 end
 
-const function def_query<A..., R...>(args_schema: okserde.Schema, result_schema: okserde.Schema): netws.QueryHandle
-	const info: netws.RegisteredQuery = {
+const function def_query<A..., R...>(args_schema: okserde.SizedSchema, result_schema: okserde.SizedSchema): netws.QueryHandle
+	const query_info: netws.RegisteredQuery = {
 		args_read = args_schema.read,
-		result_alloc = result_schema.alloc_size,
+		result_size = result_schema.dyn_size or function(): number
+			return result_schema.static_size
+		end,
 		result_write = result_schema.write,
 		callback = default_query_callback,
 	}
 
-	const query_id = register_query(info)
-
+	const query_id = register_query(query_info)
 	const query_handle: netws.QueryHandle = {
 		invoke_client = function(client: Player, ...: A...): R...
-			return deserialize(result_schema, invoke_client(client, query_id, serialize(args_schema, ...)))
+			const buf, refs = invoke_client(client, query_id, serialize(args_schema, ...))
+			set_references(refs)
+
+			return deserialize(result_schema, buf)
 		end,
 		invoke_server = function(...: A...): R...
-			return deserialize(result_schema, invoke_server(query_id, serialize(args_schema, ...)))
+			const buf, refs = invoke_server(query_id, serialize(args_schema, ...))
+			set_references(refs)
+
+			return deserialize(result_schema, buf)
 		end,
 
 		set_on_invoke = function(callback: (A...) -> R...)
-			info.callback = callback
+			query_info.callback = callback
 		end,
 	}
 

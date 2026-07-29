@@ -6,7 +6,7 @@ export type RegisteredPacket<A... = ...any> = {
 export type RegisteredQuery<A... = ...any, R... = ...any> = {
 	args_read: (b: buffer, offset: number) -> A...,
 	result_write: (b: buffer, offset: number, R...) -> number,
-	result_alloc: (R...) -> number,
+	result_size: (R...) -> number,
 
 	callback: (A...) -> R...,
 }

@@ -4,6 +4,8 @@ const encodings = okserde.encodings
 
 const okserde_rbx = require("@self/okserde/rbx")
 
+const references = require("@self/reference")
+
 return {
 	def_packet = require("@self/def_packet"),
 	def_query = require("@self/def_query"),
@@ -41,6 +43,7 @@ return {
 		EnumItem = okserde_rbx.EnumItem,
 		Faces = okserde_rbx.Faces,
 		Font = okserde_rbx.Font,
+		Instance = references.schema,
 		NumberRange = okserde_rbx.NumberRange,
 		NumberSequence = okserde_rbx.NumberSequence,
 		NumberSequenceKeypoint = okserde_rbx.NumberSequenceKeypoint,
