@@ -1,6 +1,6 @@
 const netws = require("./types")
 
-const okserde = require("./lib/okserde")
+const okserde = require("./okserde")
 const serialize = okserde.serialize
 
 const registry = require("./registry")
@@ -22,7 +22,6 @@ const function def_packet<A...>(packet_schema: okserde.Schema<A...>): netws.Pack
 		listeners = packet_listeners,
 		read = packet_schema.read,
 	})
-
 	const packet_handle: netws.PacketHandle = {
 		fire_client = function(client: Player, ...: A...)
 			fire_client(client, packet_id, serialize(packet_schema, ...))

@@ -1,0 +1,37 @@
+const okserde = require("../types")
+
+const UDim_schema = require("./UDim")
+
+const function UDim2_schema(
+	scale_enc: okserde.NumberEncoding?,
+	offset_enc: okserde.NumberEncoding?
+): okserde.StaticSchema<UDim2>
+	const udim = UDim_schema(scale_enc, offset_enc)
+	const udim_write, udim_read, udim_size = udim.write, udim.read, udim.static_size
+
+	const schema_size = udim_size * 2
+
+	return {
+		write = @native function(b: buffer, offset: number, value: UDim2): number
+			udim_write(b, offset, value.X)
+			udim_write(b, offset + udim_size, value.Y)
+			return schema_size
+		end,
+		read = @native function(b: buffer, offset: number): (number, UDim2)
+			const _, x = udim_read(b, offset)
+			const _, y = udim_read(b, offset + udim_size)
+			return schema_size, UDim2.new(x, y)
+		end,
+		validate = @native function(value: unknown): (boolean, string?)
+			if typeof(value) ~= "UDim2" then
+				return false, `expected value of type UDim2, got {typeof(value)}`
+			end
+
+			return true, nil
+		end,
+
+		static_size = schema_size,
+	}
+end
+
+return UDim2_schema

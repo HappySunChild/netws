@@ -1,8 +1,7 @@
 const netws = require("./types")
 
-const okserde = require("./lib/okserde")
-const serialize = okserde.serialize
-const deserialize = okserde.deserialize
+const okserde = require("./okserde")
+const serialize, deserialize = okserde.serialize, okserde.deserialize
 
 const registry = require("./registry")
 const register_query = registry.register_query

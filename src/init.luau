@@ -1,33 +1,33 @@
-const okserde = require("@self/lib/okserde")
+const okserde = require("@self/okserde")
 const schemas = okserde.schemas
-const specs = okserde.specs
+const encodings = okserde.encodings
 
-const okserde_rbx = require("@self/lib/okserde/rbx")
+const okserde_rbx = require("@self/okserde/rbx")
 
 return {
 	def_packet = require("@self/def_packet"),
 	def_query = require("@self/def_query"),
 
 	schemas = {
-		boolean = schemas.boolean,
-		buffer = schemas.buffer,
-		null = schemas.null,
-		number = schemas.number,
-		string = schemas.string,
-		vector = schemas.vector,
-
 		array = schemas.array,
-		optional = schemas.optional,
-		struct = schemas.struct,
-		tuple = schemas.tuple,
-		union = schemas.union,
-
 		bitarray = schemas.bitarray,
 		bitstruct = schemas.bitstruct,
+		boolean = schemas.boolean,
+		buffer = schemas.buffer,
+		cstring = schemas.cstring,
+		enum = schemas.enum,
 		flags = schemas.flags,
-		literalvariant = schemas.literalvariant,
-		termstring = schemas.termstring,
-		void = schemas.void,
+		map = schemas.map,
+		null = schemas.null,
+		number = schemas.number,
+		optional = schemas.optional,
+		padding = schemas.padding,
+		string = schemas.string,
+		struct = schemas.struct,
+		transientref = schemas.transientref,
+		tuple = schemas.tuple,
+		union = schemas.union,
+		vector = schemas.vector,
 
 		Axes = okserde_rbx.Axes,
 		BrickColor = okserde_rbx.BrickColor,
@@ -55,5 +55,5 @@ return {
 		Vector2 = okserde_rbx.Vector2,
 		Vector3 = okserde_rbx.Vector3,
 	},
-	specs = specs,
+	encodings = encodings,
 }
