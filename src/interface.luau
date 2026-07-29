@@ -24,7 +24,7 @@ const function fire_server_unreliable(packet_id: number, packet_buf: buffer)
 	unreliable_remote_event:FireServer(tag_buffer_with_id(packet_id, packet_buf), raw_references)
 end
 
-const function invoke_server(query_id: number, args_buf: buffer): buffer
+const function invoke_server(query_id: number, args_buf: buffer): (buffer, { any })
 	return remote_function:InvokeServer(tag_buffer_with_id(query_id, args_buf), raw_references)
 end
 
@@ -45,7 +45,7 @@ const function broadcast_unreliable(packet_id: number, packet_buf: buffer)
 	unreliable_remote_event:FireAllClients(tag_buffer_with_id(packet_id, packet_buf), raw_references)
 end
 
-const function invoke_client(client: Player, query_id: number, args_buf: buffer): buffer
+const function invoke_client(client: Player, query_id: number, args_buf: buffer): (buffer, { any })
 	return remote_function:InvokeClient(client, tag_buffer_with_id(query_id, args_buf), raw_references)
 end
 

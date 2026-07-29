@@ -10,7 +10,7 @@ const interface = require("./interface")
 const invoke_server, invoke_client = interface.invoke_server, interface.invoke_client
 
 const references = require("./references")
-const set_references = references.set
+const set_references = references.set_references
 
 const function default_query_callback(): never
 	error("query handler hasn't been set")
@@ -25,8 +25,6 @@ const function def_query<A..., R...>(args_schema: okserde.SizedSchema, result_sc
 		result_size = result_schema.dyn_size or function(): number
 			return result_schema.static_size
 		end,
-		result_write = result_schema.write,
-		callback = default_query_callback,
 	}
 
 	const function set_on_invoke(callback: (A...) -> R...)
