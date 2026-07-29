@@ -20,14 +20,16 @@ export type PacketHandle<A... = ...any> = {
 	broadcast: (A...) -> (),
 	broadcast_unreliable: (A...) -> (),
 
-	listen: (callback: (A...) -> ()) -> (),
+	listen_on_client: (callback: (A...) -> ()) -> (),
+	listen_on_server: (callback: (client: Player, A...) -> ()) -> (),
 }
 
 export type QueryHandle<A... = ...any, R... = ...any> = {
 	invoke_server: (A...) -> R...,
 	invoke_client: (client: Player, A...) -> R...,
 
-	set_on_invoke: (callback: (A...) -> R...) -> (),
+	set_on_client_invoke: (callback: (A...) -> R...) -> (),
+	set_on_server_invoke: (callback: (client: Player, A...) -> R...) -> (),
 }
 
 return nil

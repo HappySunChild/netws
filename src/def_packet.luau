@@ -18,6 +18,16 @@ const fire_client, fire_client_unreliable, broadcast, broadcast_unreliable, fire
 const function def_packet<A...>(packet_schema: okserde.Schema<A...>): netws.PacketHandle<A...>
 	const packet_listeners = {}
 
+	const function listen(callback: (A...) -> ())
+		const unique_id = {}
+
+		packet_listeners[unique_id] = callback
+
+		return function()
+			packet_listeners[unique_id] = nil
+		end
+	end
+
 	const packet_id = register_packet({
 		listeners = packet_listeners,
 		read = packet_schema.read,
@@ -43,15 +53,9 @@ const function def_packet<A...>(packet_schema: okserde.Schema<A...>): netws.Pack
 			fire_server_unreliable(packet_id, serialize(packet_schema, ...))
 		end,
 
-		listen = function(callback: (A...) -> ())
-			const unique_id = {}
-
-			packet_listeners[unique_id] = callback
-
-			return function()
-				packet_listeners[unique_id] = nil
-			end
-		end,
+		-- aliases so that you can get proper type checking based on context :)
+		listen_on_client = listen,
+		listen_on_server = listen,
 	}
 
 	return packet_handle
