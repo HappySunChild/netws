@@ -1,0 +1,40 @@
+{
+	"name": "dev_netws",
+	"tree": {
+		"$className": "DataModel",
+		"$ignoreUnknownInstances": true,
+		"ReplicatedStorage": {
+			"$ignoreUnknownInstances": true,
+			"netws": {
+				"$path": "src"
+			},
+			"shared": {
+				"$ignoreUnknownInstances": true,
+				"$path": "dev/shared"
+			}
+		},
+		"ServerScriptService": {
+			"$ignoreUnknownInstances": true,
+			"devtests": {
+				"$ignoreUnknownInstances": true,
+				"$className": "Folder",
+				"netws": {
+					"$path": "dev/server"
+				}
+			}
+		},
+		"StarterPlayer": {
+			"$ignoreUnknownInstances": true,
+			"StarterPlayerScripts": {
+				"$ignoreUnknownInstances": true,
+				"devtests": {
+					"$ignoreUnknownInstances": true,
+					"$className": "Folder",
+					"netws": {
+						"$path": "dev/client"
+					}
+				}
+			}
+		}
+	}
+}
