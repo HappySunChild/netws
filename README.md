@@ -1,3 +1,3 @@
 # netws
 
-buffer based Roblox networking
+another drop in the meaningless sea of Roblox™ network™ modules™.
