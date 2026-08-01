@@ -28,10 +28,7 @@ const function def_packet<A...>(packet_schema: okserde.Schema<A...>): netws.Pack
 		end
 	end
 
-	const packet_id = register_packet({
-		listeners = packet_listeners,
-		read = packet_schema.read,
-	})
+	const packet_id = register_packet({ listeners = packet_listeners, read = packet_schema.read })
 	const packet_handle: netws.PacketHandle = {
 		fire_client = function(client: Player, ...: A...)
 			fire_client(client, packet_id, serialize(packet_schema, ...))

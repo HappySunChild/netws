@@ -5,7 +5,7 @@ const initialize_context = require("./context")
 
 const info = initialize_context()
 local remote_event: RemoteEvent, unreliable_remote_event: UnreliableRemoteEvent, remote_function: RemoteFunction =
-	info.remote_event, info.unreliable_remote_event, info.remote_function
+	info.reliable_event, info.unreliable_event, info.remote_function
 
 const function tag_buffer_with_id(id: number, buf: buffer): buffer
 	const tagged_b = buffer.create(buffer.len(buf) + 1)
