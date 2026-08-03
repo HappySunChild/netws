@@ -1,11 +1,10 @@
 const references = require("./references")
 const raw_references = references.raw
 
-const initialize_context = require("./context")
+const remotes = require("./remotes")
 
-const info = initialize_context()
-local remote_event: RemoteEvent, unreliable_remote_event: UnreliableRemoteEvent, remote_function: RemoteFunction =
-	info.reliable_event, info.unreliable_event, info.remote_function
+local reliable_event: RemoteEvent, unreliable_event: UnreliableRemoteEvent, remote_function: RemoteFunction =
+	remotes.reliable_event, remotes.unreliable_event, remotes.remote_function
 
 const function tag_buffer_with_id(id: number, buf: buffer): buffer
 	const tagged_b = buffer.create(buffer.len(buf) + 1)
@@ -17,11 +16,11 @@ end
 
 -- client
 const function fire_server(packet_id: number, packet_buf: buffer)
-	remote_event:FireServer(tag_buffer_with_id(packet_id, packet_buf), raw_references)
+	reliable_event:FireServer(tag_buffer_with_id(packet_id, packet_buf), raw_references)
 end
 
 const function fire_server_unreliable(packet_id: number, packet_buf: buffer)
-	unreliable_remote_event:FireServer(tag_buffer_with_id(packet_id, packet_buf), raw_references)
+	unreliable_event:FireServer(tag_buffer_with_id(packet_id, packet_buf), raw_references)
 end
 
 const function invoke_server(query_id: number, args_buf: buffer): (buffer, { any })
@@ -30,19 +29,19 @@ end
 
 -- server
 const function fire_client(client: Player, packet_id: number, packet_buf: buffer)
-	remote_event:FireClient(client, tag_buffer_with_id(packet_id, packet_buf), raw_references)
+	reliable_event:FireClient(client, tag_buffer_with_id(packet_id, packet_buf), raw_references)
 end
 
 const function fire_client_unreliable(client: Player, packet_id: number, packet_buf: buffer)
-	unreliable_remote_event:FireClient(client, tag_buffer_with_id(packet_id, packet_buf), raw_references)
+	unreliable_event:FireClient(client, tag_buffer_with_id(packet_id, packet_buf), raw_references)
 end
 
 const function broadcast(packet_id: number, packet_buf: buffer)
-	remote_event:FireAllClients(tag_buffer_with_id(packet_id, packet_buf), raw_references)
+	reliable_event:FireAllClients(tag_buffer_with_id(packet_id, packet_buf), raw_references)
 end
 
 const function broadcast_unreliable(packet_id: number, packet_buf: buffer)
-	unreliable_remote_event:FireAllClients(tag_buffer_with_id(packet_id, packet_buf), raw_references)
+	unreliable_event:FireAllClients(tag_buffer_with_id(packet_id, packet_buf), raw_references)
 end
 
 const function invoke_client(client: Player, query_id: number, args_buf: buffer): (buffer, { any })

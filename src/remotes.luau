@@ -25,8 +25,6 @@ const function on_packet(incoming_data: buffer, incoming_refs: { any }, origin_c
 		table.insert(args, 1, origin_client)
 	end
 
-	clear_references()
-
 	for _, callback in packet.listeners do
 		task.spawn(callback, unpack(args))
 	end
@@ -43,12 +41,12 @@ const function on_query(incoming_data: buffer, incoming_refs: { any }, origin_cl
 	const args = { select(2, query.args_read(incoming_data, 1)) }
 
 	if origin_client ~= nil then
-		table.insert(args, origin_client)
+		table.insert(args, 1, origin_client)
 	end
 
 	clear_references()
 
-	const results = query.callback(unpack(args))
+	const results = { query.callback(unpack(args)) }
 
 	const outgoing_data = buffer.create(query.result_size(unpack(results)))
 	query.result_write(outgoing_data, 0, unpack(results))
@@ -61,7 +59,6 @@ end
 export type ContextInformation = {
 	reliable_event: RemoteEvent,
 	unreliable_event: UnreliableRemoteEvent,
-
 	remote_function: RemoteFunction,
 }
 
@@ -93,7 +90,6 @@ const function initialize_server(): ContextInformation
 	return {
 		reliable_event = reliable_event,
 		unreliable_event = unreliable_event,
-
 		remote_function = remote_function,
 	}
 end
@@ -118,12 +114,13 @@ const function initialize_client(): ContextInformation
 	return {
 		reliable_event = reliable_event,
 		unreliable_event = unreliable_event,
-
 		remote_function = remote_function,
 	}
 end
 
-const function agnostic_initialize(): ContextInformation
+---
+
+const function initialize_context(): ContextInformation
 	if RunService:IsServer() then
 		return initialize_server()
 	end
@@ -131,4 +128,4 @@ const function agnostic_initialize(): ContextInformation
 	return initialize_client()
 end
 
-return agnostic_initialize
+return initialize_context()
