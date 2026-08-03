@@ -16,7 +16,10 @@ const function default_query_callback(): never
 	error("query handler hasn't been set")
 end
 
-const function def_query<A..., R...>(args_schema: okserde.SizedSchema, result_schema: okserde.SizedSchema): netws.QueryHandle
+const function def_query<A..., R...>(
+	args_schema: okserde.SizedSchema<A...>,
+	result_schema: okserde.SizedSchema<R...>
+): netws.QueryHandle<A..., R...>
 	const query_info: netws.RegisteredQuery = {
 		args_read = args_schema.read,
 		callback = default_query_callback,
