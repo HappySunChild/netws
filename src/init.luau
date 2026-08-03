@@ -5,6 +5,7 @@ const encodings = okserde.encodings
 const okserde_rbx = require("@self/okserde/rbx")
 
 const references = require("@self/references")
+const ref_schema = schemas.transientref(references.raw)
 
 return {
 	def_packet = require("@self/def_packet"),
@@ -31,6 +32,8 @@ return {
 		union = schemas.union,
 		vector = schemas.vector,
 
+		ref = ref_schema,
+
 		Axes = okserde_rbx.Axes,
 		BrickColor = okserde_rbx.BrickColor,
 		CFrame = okserde_rbx.CFrame,
@@ -43,7 +46,7 @@ return {
 		EnumItem = okserde_rbx.EnumItem,
 		Faces = okserde_rbx.Faces,
 		Font = okserde_rbx.Font,
-		Instance = schemas.transientref(references.raw),
+		Instance = ref_schema,
 		NumberRange = okserde_rbx.NumberRange,
 		NumberSequence = okserde_rbx.NumberSequence,
 		NumberSequenceKeypoint = okserde_rbx.NumberSequenceKeypoint,
