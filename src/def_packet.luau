@@ -15,6 +15,9 @@ const fire_client, fire_client_unreliable, broadcast, broadcast_unreliable, fire
 	interface.fire_server,
 	interface.fire_server_unreliable
 
+const references = require("./references")
+const clear_references = references.clear_references
+
 const function def_packet<A...>(packet_schema: okserde.Schema<A...>): netws.PacketHandle<A...>
 	const packet_listeners = {}
 
@@ -31,22 +34,28 @@ const function def_packet<A...>(packet_schema: okserde.Schema<A...>): netws.Pack
 	const packet_id = register_packet({ listeners = packet_listeners, read = packet_schema.read })
 	const packet_handle: netws.PacketHandle = {
 		fire_client = function(client: Player, ...: A...)
+			clear_references()
 			fire_client(client, packet_id, serialize(packet_schema, ...))
 		end,
 		fire_client_unreliable = function(client: Player, ...: A...)
+			clear_references()
 			fire_client_unreliable(client, packet_id, serialize(packet_schema, ...))
 		end,
 		broadcast = function(...: A...)
+			clear_references()
 			broadcast(packet_id, serialize(packet_schema, ...))
 		end,
 		broadcast_unreliable = function(...: A...)
+			clear_references()
 			broadcast_unreliable(packet_id, serialize(packet_schema, ...))
 		end,
 
 		fire_server = function(...: A...)
+			clear_references()
 			fire_server(packet_id, serialize(packet_schema, ...))
 		end,
 		fire_server_unreliable = function(...: A...)
+			clear_references()
 			fire_server_unreliable(packet_id, serialize(packet_schema, ...))
 		end,
 

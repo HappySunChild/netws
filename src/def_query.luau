@@ -10,7 +10,7 @@ const interface = require("./interface")
 const invoke_server, invoke_client = interface.invoke_server, interface.invoke_client
 
 const references = require("./references")
-const set_references = references.set_references
+const set_references, clear_references = references.set_references, references.clear_references
 
 const function default_query_callback(): never
 	error("query handler hasn't been set")
@@ -34,12 +34,16 @@ const function def_query<A..., R...>(args_schema: okserde.SizedSchema, result_sc
 	const query_id = register_query(query_info)
 	const query_handle: netws.QueryHandle = {
 		invoke_client = function(client: Player, ...: A...): R...
+			clear_references()
+
 			const buf, refs = invoke_client(client, query_id, serialize(args_schema, ...))
 			set_references(refs)
 
 			return deserialize(result_schema, buf)
 		end,
 		invoke_server = function(...: A...): R...
+			clear_references()
+
 			const buf, refs = invoke_server(query_id, serialize(args_schema, ...))
 			set_references(refs)
 
